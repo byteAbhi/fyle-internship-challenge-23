@@ -1,5 +1,123 @@
+<!-- app.component.html -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+ 
 <div class="grid h-screen place-items-center">
   <div class="font-bold text-3xl">
     Fyle Internship Challenge
   </div>
+</div>
+
+<div class="container">
+  <input class="search-bar" type="text" [(ngModel)]="searchUsername" placeholder="Enter GitHub username">
+  <button class="search-button" (click)="searchUser()"><i class="fa-solid fa-magnifying-glass"></i></button>
+</div>
+
+<div *ngIf="searchClicked">
+  <header>
+    <div class="out-circle">
+      <div class="image">
+        <img src="{{ userData?.avatar_url }}" alt="User Avatar"> <!-- User profile image -->
+      </div>
+    </div>
+    <div class="intro">
+      <h1>{{ userData?.name }}</h1>
+      <h5>{{ userData?.bio }}</h5>
+      <h5><i class="fas fa-map-marker-alt"></i> {{ userData?.location }}</h5>
+      <h5><p><a href="https://twitter.com/{{ userData?.twitter_username }}" target="_blank">Twitter</a></p></h5>
+    </div>
+  </header>
+
+  <div class="link">
+    <p><i class="fas fa-link"></i> <a href="{{ userData?.html_url }}" target="_blank">{{ userData?.html_url }}</a></p>
+  </div>
+
+  <div *ngIf="loading; else content">
+    <section>
+      <div class="section-one">
+      <div class="part"> 
+           
+          <div class="btn">
+            
+          </div>
+       
+      </div>
+      <div class="part">  
+          <div class="btn">
+               
+          </div></div>
+      <div class="part">  
+          <div class="btn">
+               
+          </div></div>
+  </div>
+  <div class="section-two">
+      <div class="part">  
+           
+          <div class="btn">
+               
+          </div></div>
+      <div class="part">  
+          <div class="btn">
+               
+          </div></div>
+      <div class="part">  
+           
+          <div class="btn">
+              
+          </div></div>
+  </div>
+   </section>
+  </div>
+
+  <ng-template #content>
+    <div *ngIf="userData !== null; else zeroState">
+      <div class="card-container">
+        <mat-card *ngFor="let repo of userRepos" class="repo-card">
+          <mat-card-header>
+            <mat-card-title>{{ repo.name }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="description">{{ repo.description }}</p>
+            <p *ngIf="repo.topics?.length > 0"></p>
+            <ul class="topics-list">
+              <li *ngFor="let topic of repo.topics" [ngStyle]="{'background-color': getTopicColor(topic)}">{{ topic }}</li>
+            </ul>
+          </mat-card-content>
+          <mat-card-actions>
+            <a class="view-repo" mat-button href="{{ repo.html_url }}" target="_blank">View Repo</a>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+    <div *ngIf="showPagination">
+      <div class="cntrl-btn">
+        <div>
+          <button class="c-btn" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+        </div>
+        <span>{{ currentPage }}</span>
+        <div> 
+          <button class="c-btn" mat-button (click)="onPageChange(currentPage + 1)" [disabled]="userRepos.length < pageSize">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-dropdown">
+      <label class="pg-size" for="pageSize">Page Size:</label>
+      <select class="pg-size" id="pageSize" name="pageSize" (change)="onPageSizeChange($event)">
+        <option *ngFor="let option of pageSizeOptions" [value]="option" [selected]="option === pageSize">{{ option }}</option>
+      </select>
+    </div>
+  </ng-template>
+
+ 
+
+  <ng-template #zeroState>
+    <div>
+      <h2>User Not Found</h2>
+      <p>Please enter a valid GitHub username to search for repositories.</p>
+    </div>
+  </ng-template>
 </div>
